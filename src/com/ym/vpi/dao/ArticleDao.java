@@ -23,9 +23,14 @@ public interface ArticleDao {
 //	public List<Article> getPaginationArticle(final int currentPage, final int pageSize);
 	public Pagination getPaginationArticle(int currentPage, int pageSize);
 	
+	//我发表的文章分页
+	public Pagination getPaginationMyArticle(int currentPage, int pageSize, String username);
+	
 	//下拉刷新
-	public Pagination getUpdatedPaginationArticle(int updateCount, Date lastUpdatedDate);
 	public Pagination getUpdatedPaginationArticle(int updateCount, String lastUpdatedDate);
+	
+	//我发表文章下拉刷新
+	public Pagination getUpdatedMyArticle(int updateCount, String lastUpdatedDate, String username);
 
 	// 某篇指定文章的
 	public Article getArticleById(Long id);

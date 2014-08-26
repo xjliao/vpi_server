@@ -33,6 +33,7 @@ public class IndexAction extends AppBaseAction {
 	private Integer pageSize;
 	private Pagination paginations;
 	private String lastUpdatedDateStr;
+	private String username;
 
 
 	public String execute() {
@@ -62,6 +63,57 @@ public class IndexAction extends AppBaseAction {
 		}
 		
 		paginations = articleManager.getPaginationArticle(nowPage, pageSize);
+		ServletActionContext.getResponse().setContentType("text/json");
+		ServletActionContext.getResponse().setCharacterEncoding("utf-8");
+		
+		try {
+			PrintWriter out = ServletActionContext.getResponse().getWriter();
+			
+			JSONObject pagintionObj = new JSONObject();
+			JSONObject rowsObj = new JSONObject();
+			JSONArray rowsArr = new JSONArray();
+			
+			allArticles = (List<Article>) paginations.getRows();
+			
+			for (int i = 0, n = allArticles.size(); i < n; i++) {
+				Article article = allArticles.get(i);
+				JSONObject rowObj = new JSONObject();
+				rowObj.put("id", article.getId());
+				rowObj.put("title", article.getTitle());
+				rowObj.put("content", article.getContent());
+				rowObj.put("likeCount", article.getLikeCount());
+				rowObj.put("imageId", "1122");
+				rowsArr.add(rowObj);
+			}
+			rowsObj.put("countPage", paginations.getCountPage());
+			rowsObj.put("from", paginations.getFrom());
+			rowsObj.put("nowPage", paginations.getNowPage());
+			rowsObj.put("rows", rowsArr);
+			rowsObj.put("size", paginations.getSize());
+			rowsObj.put("total", paginations.getTotal());
+			
+			pagintionObj.put("pagination", rowsObj);
+			
+			out.println(pagintionObj.toString());
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void mobileMyExecute() {
+		System.out.println("nowPage=" + nowPage + "-pageSize=" + pageSize);
+		//默认分页
+		if (nowPage == null || pageSize == null) {
+			nowPage = 1;
+			pageSize = 5;
+		}
+		
+		paginations = articleManager.getPaginationMyArticle(nowPage, pageSize, username);
+		System.out.println("我的教程:" + paginations.getSize());
 		ServletActionContext.getResponse().setContentType("text/json");
 		ServletActionContext.getResponse().setCharacterEncoding("utf-8");
 		
@@ -153,6 +205,59 @@ public class IndexAction extends AppBaseAction {
 			}
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void mobileUpatedMyArticleExecute() {
+		System.out.println("上一次更新时间:" + lastUpdatedDateStr);
+		
+		if (lastUpdatedDateStr != null && !"".equals(lastUpdatedDateStr)) {
+			paginations = articleManager.getUpdatedMyArticle(5, lastUpdatedDateStr, username);
+			System.out.println("更新" + paginations.getSize() + "条");
+			
+			ServletActionContext.getResponse().setContentType("text/json");
+			ServletActionContext.getResponse().setCharacterEncoding("utf-8");
+			
+			try {
+				PrintWriter out = ServletActionContext.getResponse().getWriter();
+				
+				JSONObject pagintionObj = new JSONObject();
+				JSONObject rowsObj = new JSONObject();
+				JSONArray rowsArr = new JSONArray();
+				
+				allArticles = (List<Article>) paginations.getRows();
+				
+				if (allArticles != null && allArticles.size() > 0) {
+					for (int i = 0, n = allArticles.size(); i < n; i++) {
+						Article article = allArticles.get(i);
+						JSONObject rowObj = new JSONObject();
+						rowObj.put("id", article.getId());
+						rowObj.put("title", article.getTitle());
+						rowObj.put("content", article.getContent());
+						rowObj.put("likeCount", article.getLikeCount());
+						rowObj.put("imageId", "1122");
+						rowsArr.add(rowObj);
+					}
+				
+					rowsObj.put("countPage", paginations.getCountPage());
+					rowsObj.put("from", paginations.getFrom());
+					rowsObj.put("nowPage", paginations.getNowPage());
+					rowsObj.put("rows", rowsArr);
+					rowsObj.put("size", paginations.getSize());
+					rowsObj.put("total", paginations.getTotal());
+				
+					pagintionObj.put("pagination", rowsObj);
+				
+					out.println(pagintionObj.toString());
+					out.flush();
+					out.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 //	
 //	@SuppressWarnings("unchecked")
 //	public void mobileExecute4() {
@@ -307,5 +412,13 @@ public class IndexAction extends AppBaseAction {
 
 	public void setLastUpdatedDateStr(String lastUpdatedDateStr) {
 		this.lastUpdatedDateStr = lastUpdatedDateStr;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }

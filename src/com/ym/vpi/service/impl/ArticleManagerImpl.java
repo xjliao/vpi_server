@@ -69,10 +69,10 @@ public class ArticleManagerImpl implements ArticleManager {
 		return articleDao.getPaginationArticle(currentPage, pageSize);
 	}
 	
-	//下拉刷新
-	public Pagination getUpdatedPaginationArticle(int updateCount, Date lastUpdatedDate) {
-		return articleDao.getUpdatedPaginationArticle(updateCount, lastUpdatedDate);
+	public Pagination getPaginationMyArticle(int currentPage, final int pageSize, String username) {
+		return articleDao.getPaginationMyArticle(currentPage, pageSize, username);
 	}
+	
 	
 	//下拉刷新
 	public Pagination getUpdatedPaginationArticle(int updateCount, String lastUpdatedDate) {
@@ -85,6 +85,9 @@ public class ArticleManagerImpl implements ArticleManager {
 //		return articleDao.getPaginationArticle(currentPage, pageSize);
 //	}
 	
-	
+	//我的文章下拉刷新的呢
+	public Pagination getUpdatedMyArticle(int updateCount, String lastUpdatedDate, String username) {
+		return articleDao.getUpdatedMyArticle(updateCount, lastUpdatedDate, username);
+	}
 
 }

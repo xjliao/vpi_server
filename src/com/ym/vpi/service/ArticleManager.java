@@ -19,11 +19,12 @@ public interface ArticleManager {
 	// 分页文章
 	//public List<Article> getPaginationArticle(final int currentPage, final int pageSize);
 	public Pagination getPaginationArticle(int currentPage, int pageSize);
-
+	//我发表的文章
+	public Pagination getPaginationMyArticle(int currentPage, final int pageSize, String username);
 	//下拉刷新
-	public Pagination getUpdatedPaginationArticle(int updateCount, Date lastUpdatedDate);
 	public Pagination getUpdatedPaginationArticle(int updateCount, String lastUpdatedDate);
-	
+	//我发表的文章
+	public Pagination getUpdatedMyArticle(int updateCount, String lastUpdatedDate, String username);
 	// 指定id的文章，比如点击进入文章明细页面
 	public Article articlesById(Long id);
 

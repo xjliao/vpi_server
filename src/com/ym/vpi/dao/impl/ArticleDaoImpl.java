@@ -163,12 +163,48 @@ public class ArticleDaoImpl implements ArticleDao {
 		
 	}
 
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public Pagination getPaginationMyArticle(int currentPage, final int pageSize, String username) 
+	{
+		final int startIndex = (currentPage - 1) * pageSize;
+		final String sql = "from Article where user.username = '" + username + "' ORDER BY createTime desc";
+		int total = hibernateTemplate.find(sql).size();
+		System.out.println("total=" + total);
+		//有效数则进位
+		int countPage = total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1;
+		System.out.println("countPage=" + countPage);
+		System.out.println("pageSize=" + pageSize);
+		articles =  hibernateTemplate.executeFind(new HibernateCallback() {
+
+			@Override
+			public Object doInHibernate(Session arg0)
+					throws HibernateException, SQLException {
+				// TODO Auto-generated method stub
+				Query query = arg0.createQuery(sql); 
+				query.setFirstResult(startIndex); 
+				query.setMaxResults(pageSize); 
+				List list = query.list(); 
+				return list;
+			}
+		});
+		
+		pagination = new Pagination();
+		pagination.setSize(pageSize);
+		pagination.setFrom(startIndex + 1);
+		pagination.setNowPage(currentPage);
+		pagination.setCountPage(countPage);
+		pagination.setTotal(total);
+		pagination.setRows(articles);
+		
+		return pagination;
+	}
+	
 	@Override
 	public Pagination getUpdatedPaginationArticle(int updateCount,
-			Date lastUpdatedDate) {
+			String lastUpdatedDate) {
 		// TODO Auto-generated method stub
 
-		String sql = "from Article a where a.createTime > " + lastUpdatedDate + " ORDER BY a.createTime desc";
+		String sql = "from Article a where a.createTime > '" + lastUpdatedDate + "' ORDER BY a.createTime desc";
 		
 		articles =   hibernateTemplate.find(sql);
 		pagination = new Pagination();
@@ -177,13 +213,9 @@ public class ArticleDaoImpl implements ArticleDao {
 		return pagination;
 	}
 	
-
-	@Override
-	public Pagination getUpdatedPaginationArticle(int updateCount,
-			String lastUpdatedDate) {
-		// TODO Auto-generated method stub
-
-		String sql = "from Article a where a.createTime > '" + lastUpdatedDate + "' ORDER BY a.createTime desc";
+	public Pagination getUpdatedMyArticle(int updateCount, String lastUpdatedDate, String username) {
+		String sql = "from Article a where a.createTime > '" + lastUpdatedDate + "'"
+					+ " and user.username = '" + username + "' ORDER BY a.createTime desc";
 		
 		articles =   hibernateTemplate.find(sql);
 		pagination = new Pagination();
