@@ -7,6 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javapns.back.PushNotificationManager;
+import javapns.back.SSLConnectionHelper;
+import javapns.data.Device;
+import javapns.data.PayLoad;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -35,7 +40,43 @@ public class IndexAction extends AppBaseAction {
 	private String lastUpdatedDateStr;
 	private String username;
 
-
+	//推送
+	private String devToken;
+	
+	public void push() {
+		try {
+			PayLoad payLoad = new PayLoad();
+	        payLoad.addAlert("这是一个iphone push demo");//push的内容
+	        payLoad.addBadge(1);//图标小红圈的数值
+	        payLoad.addSound("default");//铃音
+	                  
+	        PushNotificationManager pushManager = PushNotificationManager.getInstance();
+	        pushManager.addDevice("iPhone", devToken);
+	                  
+	        //Connect to APNs
+	                    /************************************************
+	                    测试的服务器地址：gateway.sandbox.push.apple.com /端口2195 
+	        产品推送服务器地址：gateway.push.apple.com / 2195 
+	                   ***************************************************/
+	        String host= "gateway.sandbox.push.apple.com";
+	        int port = 2195;
+	        String certificatePath= "/Users/xjliao/Desktop/push/vpipush.p12";//导出的证书
+	        String certificatePassword= "199010";//此处注意导出的证书密码不能为空因为空密码会报错
+	        pushManager.initializeConnection(host,port, certificatePath,certificatePassword, SSLConnectionHelper.KEYSTORE_TYPE_PKCS12);
+	                  
+	        //Send Push
+	        Device client = pushManager.getDevice("iPhone");
+	        pushManager.sendNotification(client, payLoad);
+	        pushManager.stopConnection();
+	
+	        pushManager.removeDevice("iPhone");
+       } catch (Exception e) {
+    	   e.printStackTrace();
+       }
+		
+	}
+	
+	
 	public String execute() {
 		user = (User) ServletActionContext.getContext().getSession()
 				.get("user");
@@ -421,4 +462,13 @@ public class IndexAction extends AppBaseAction {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+	public String getDevToken() {
+		return devToken;
+	}
+
+	public void setDevToken(String devToken) {
+		this.devToken = devToken;
+	}
+	
 }

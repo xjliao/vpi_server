@@ -1,9 +1,6 @@
 package com.ym.vpi.webapp.action;
 
-import org.apache.struts2.ServletActionContext;
-
 import com.opensymphony.xwork2.ActionSupport;
-import com.ym.vpi.model.User;
 import com.ym.vpi.service.ArticleManager;
 import com.ym.vpi.service.UserManager;
 

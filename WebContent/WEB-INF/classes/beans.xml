@@ -17,4 +17,7 @@
 	<!-- Article -->
 	<bean id="articleManager" class="com.ym.vpi.service.impl.ArticleManagerImpl"/>
 	<bean id="articleDao" class="com.ym.vpi.dao.impl.ArticleDaoImpl" /> 
+	<!-- Deivce -->
+	<bean id="deviceManager" class="com.ym.vpi.service.impl.DeviceManagerImpl"/>
+	<bean id="deviceDao" class="com.ym.vpi.dao.impl.DeviceDaoImpl" /> 
 </beans>
